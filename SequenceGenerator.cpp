@@ -4,7 +4,7 @@
 
 namespace miit::algebra
 {
-    SequenceGenerator::SequenceGenerator(std::vector<int> values)
+    SequenceGenerator::SequenceGenerator(const std::vector<int> values)
         : values(std::move(values))
     {
     }
