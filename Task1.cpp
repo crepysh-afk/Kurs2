@@ -1,10 +1,10 @@
-#include "Task1.h"
+    #include "Task1.h"
 #include <cstdlib>
 #include <stdexcept>
 
 namespace miit::algebra
 {
-    Task1::Task1(std::size_t rows, std::size_t columns, Generator& generator)
+    Task1::Task1(const std::size_t rows, const std::size_t columns, Generator& generator)
         : Exercise<int>(rows, columns, generator)
     {
     }
@@ -35,3 +35,5 @@ namespace miit::algebra
         }
     }
 }
+
+    
