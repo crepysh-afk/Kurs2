@@ -2,7 +2,7 @@
 
 namespace miit::algebra
 {
-    Task2::Task2(std::size_t rows, std::size_t columns, Generator& generator)
+    Task2::Task2(const std::size_t rows, const std::size_t columns, Generator& generator)
         : Exercise<int>(rows, columns, generator)
     {
     }
@@ -18,10 +18,12 @@ namespace miit::algebra
         // индексы ещё не проверенных столбцов.
         for (std::size_t column = matrix.columns(); column-- > 0;)
         {
-            if (matrix.at(0, column) % 2 == 0)
+            if (matrix[column] % 2 == 0)
             {
                 matrix.removeColumn(column);
             }
         }
     }
 }
+
+    
