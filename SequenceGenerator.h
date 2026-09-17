@@ -6,7 +6,12 @@
 
 namespace miit::algebra
 {
-    // Генератор для модульных тестов: последовательно возвращает заданные числа.
+    /**
+     * @brief Генератор последовательности заранее заданных чисел.
+     *
+     * Используется в основном для воспроизводимого заполнения матриц
+     * и модульного тестирования.
+     */
     class SequenceGenerator final : public Generator
     {
     private:
@@ -14,7 +19,17 @@ namespace miit::algebra
         std::size_t position = 0;
 
     public:
-        explicit SequenceGenerator(std::vector<int> values);
+        /**
+         * @brief Создаёт генератор из последовательности значений.
+         * @param values Набор целых чисел для последовательной выдачи.
+         */
+        explicit SequenceGenerator(const std::vector<int> values);
+
+        /**
+         * @brief Возвращает следующее значение последовательности.
+         * @return Следующее целое число.
+         * @throw std::out_of_range Если все значения уже выданы.
+         */
         int generate() override;
     };
 }
