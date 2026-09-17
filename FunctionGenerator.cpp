@@ -3,7 +3,7 @@
 
 namespace miit::algebra
 {
-    FunctionGenerator::FunctionGenerator(std::function<int()> function)
+    FunctionGenerator::FunctionGenerator(cont std::function<int()> function)
         : function(std::move(function))
     {
         if (!this->function)
