@@ -199,13 +199,6 @@ namespace miit::algebra
         void fill(Generator& generator);
 
         /**
-         * @brief Заполняет все элементы одним значением.
-         *
-         * @param value Значение типа int.
-         */
-        void fill(const int value);
-
-        /**
          * @brief Удаляет один столбец матрицы.
          *
          * @param column Номер удаляемого столбца типа std::size_t.
