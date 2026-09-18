@@ -49,8 +49,6 @@ namespace miit::algebra
         const int& operator[](const std::size_t index) const;
         /** @brief Заполняет матрицу генератором. */
         void fill(Generator& generator);
-        /** @brief Заполняет матрицу одним значением. */
-        void fill(const int value);
         /** @brief Удаляет столбец. */
         void removeColumn(const std::size_t column);
         /** @brief Возвращает строковое представление матрицы. */
