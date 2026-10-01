@@ -4,6 +4,7 @@
 #include "../DepartmentLibrary/Teacher.h"
 #include "../DepartmentLibrary/Worker.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
