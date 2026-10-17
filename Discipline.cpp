@@ -1,37 +1,80 @@
-#include "Discipline.h"
+#include "Department.h"
 
-Discipline::Discipline(
-    const std::string& name,
-    const std::vector<std::string>& lessonTypes)
-    : name_(name),
-      lessonTypes_(lessonTypes)
+#include <stdexcept>
+#include <utility>
+
+Department::Department(const std::string& name)
+    : name_(name)
 {
 }
 
-const std::string& Discipline::getName() const noexcept
+void Department::addSpecialty(const Specialty& specialty)
+{
+    specialties_.push_back(specialty);
+}
+
+void Department::addDiscipline(const Discipline& discipline)
+{
+    disciplines_.push_back(discipline);
+}
+
+void Department::addPosition(const Position& position)
+{
+    positions_.push_back(position);
+}
+
+void Department::addGroup(const Group& group)
+{
+    groups_.push_back(group);
+}
+
+void Department::addWorker(std::unique_ptr<Worker> worker)
+{
+    if (worker == nullptr)
+    {
+        throw std::invalid_argument("Работник не задан.");
+    }
+
+    workers_.push_back(std::move(worker));
+}
+
+const std::string& Department::getName() const noexcept
 {
     return name_;
 }
 
-const std::vector<std::string>&
-Discipline::getLessonTypes() const noexcept
+const std::vector<Specialty>&
+Department::getSpecialties() const noexcept
 {
-    return lessonTypes_;
+    return specialties_;
 }
 
-std::string Discipline::toString() const
+const std::vector<Discipline>&
+Department::getDisciplines() const noexcept
 {
-    std::string result = name_ + ", виды занятий: ";
+    return disciplines_;
+}
 
-    for (std::size_t i = 0; i < lessonTypes_.size(); ++i)
-    {
-        result += lessonTypes_[i];
+const std::vector<Position>&
+Department::getPositions() const noexcept
+{
+    return positions_;
+}
 
-        if (i + 1 < lessonTypes_.size())
-        {
-            result += ", ";
-        }
-    }
+const std::vector<Group>& Department::getGroups() const noexcept
+{
+    return groups_;
+}
 
-    return result;
+const std::vector<std::unique_ptr<Worker>>&
+Department::getWorkers() const noexcept
+{
+    return workers_;
+}
+
+std::string Department::toString() const
+{
+    return name_
+        + ", работников: " + std::to_string(workers_.size())
+        + ", групп: " + std::to_string(groups_.size());
 }
