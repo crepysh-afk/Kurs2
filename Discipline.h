@@ -1,39 +1,105 @@
 #pragma once
 
+#include "Discipline.h"
+#include "Group.h"
+#include "Position.h"
+#include "Specialty.h"
+#include "Worker.h"
+
+#include <memory>
 #include <string>
 #include <vector>
 
 /**
- * @brief Дисциплина, преподаваемая на кафедре.
+ * @brief Кафедра.
+ *
+ * Содержит специальности, дисциплины, должности,
+ * учебные группы и работников.
+ * Студенты хранятся внутри учебных групп.
  */
-class Discipline
+class Department
 {
 private:
     std::string name_;
-    std::vector<std::string> lessonTypes_;
+
+    std::vector<Specialty> specialties_;
+    std::vector<Discipline> disciplines_;
+    std::vector<Position> positions_;
+    std::vector<Group> groups_;
+
+    std::vector<std::unique_ptr<Worker>> workers_;
 
 public:
     /**
-     * @brief Создаёт дисциплину.
-     * @param name Название дисциплины.
-     * @param lessonTypes Виды занятий по дисциплине.
+     * @brief Создаёт кафедру.
+     * @param name Название кафедры.
      */
-    Discipline(
-        const std::string& name,
-        const std::vector<std::string>& lessonTypes);
+    explicit Department(const std::string& name);
 
     /**
-     * @return Название дисциплины.
+     * @brief Добавляет специальность.
+     * @param specialty Добавляемая специальность.
+     */
+    void addSpecialty(const Specialty& specialty);
+
+    /**
+     * @brief Добавляет дисциплину.
+     * @param discipline Добавляемая дисциплина.
+     */
+    void addDiscipline(const Discipline& discipline);
+
+    /**
+     * @brief Добавляет должность.
+     * @param position Добавляемая должность.
+     */
+    void addPosition(const Position& position);
+
+    /**
+     * @brief Добавляет группу вместе с её студентами.
+     * @param group Группа. В кафедре сохраняется её копия.
+     */
+    void addGroup(const Group& group);
+
+    /**
+     * @brief Добавляет работника и принимает владение им.
+     * @param worker Умный указатель на работника.
+     * @throws std::invalid_argument Если указатель пустой.
+     */
+    void addWorker(std::unique_ptr<Worker> worker);
+
+    /**
+     * @return Название кафедры.
      */
     const std::string& getName() const noexcept;
 
     /**
-     * @return Виды занятий по дисциплине.
+     * @return Специальности кафедры.
      */
-    const std::vector<std::string>& getLessonTypes() const noexcept;
+    const std::vector<Specialty>& getSpecialties() const noexcept;
 
     /**
-     * @return Информация о дисциплине.
+     * @return Дисциплины кафедры.
+     */
+    const std::vector<Discipline>& getDisciplines() const noexcept;
+
+    /**
+     * @return Должности кафедры.
+     */
+    const std::vector<Position>& getPositions() const noexcept;
+
+    /**
+     * @return Группы кафедры.
+     */
+    const std::vector<Group>& getGroups() const noexcept;
+
+    /**
+     * @return Коллекция работников базового типа Worker.
+     */
+    const std::vector<std::unique_ptr<Worker>>&
+        getWorkers() const noexcept;
+
+    /**
+     * @return Сводная информация о кафедре.
      */
     std::string toString() const;
 };
