@@ -4,10 +4,8 @@
 #include "Engineer.h"
 #include "Teacher.h"
 
-#include <memory>
 #include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -70,9 +68,7 @@ namespace DepartmentTests
             );
 
             Assert::AreEqual(
-                std::string(
-                    "Иванов Иван, зачётная книжка: 24001"
-                ),
+                std::string("Иванов Иван, зачётная книжка: 24001"),
                 student.toString()
             );
         }
@@ -81,10 +77,7 @@ namespace DepartmentTests
         {
             const Discipline discipline(
                 "Физика",
-                {
-                    "Лекции",
-                    "Лабораторные"
-                }
+                {"Лекции", "Лабораторные"}
             );
 
             const std::vector<std::string>& types =
@@ -95,10 +88,7 @@ namespace DepartmentTests
                 discipline.getName()
             );
 
-            Assert::AreEqual<std::size_t>(
-                2,
-                types.size()
-            );
+            Assert::AreEqual<std::size_t>(2, types.size());
 
             Assert::AreEqual(
                 std::string("Лекции"),
@@ -156,17 +146,10 @@ namespace DepartmentTests
                 group.getSpecialty().getName()
             );
 
-            Assert::IsTrue(
-                group.getStudents().empty()
-            );
+            Assert::IsTrue(group.getStudents().empty());
 
-            group.addStudent(
-                Student("Иванов Иван", "24001")
-            );
-
-            group.addStudent(
-                Student("Петров Пётр", "24002")
-            );
+            group.addStudent(Student("Иванов Иван", "24001"));
+            group.addStudent(Student("Петров Пётр", "24002"));
 
             Assert::AreEqual<std::size_t>(
                 2,
@@ -202,46 +185,22 @@ namespace DepartmentTests
             );
 
             Group group("ИВТ-201", specialty);
-
-            group.addStudent(
-                Student("Иванов Иван", "24001")
-            );
+            group.addStudent(Student("Иванов Иван", "24001"));
 
             Assert::AreEqual(
                 std::string("Кафедра информатики"),
                 department.getName()
             );
 
-            Assert::IsTrue(
-                department.getSpecialties().empty()
-            );
-
-            Assert::IsTrue(
-                department.getDisciplines().empty()
-            );
-
-            Assert::IsTrue(
-                department.getPositions().empty()
-            );
-
-            Assert::IsTrue(
-                department.getGroups().empty()
-            );
-
-            Assert::IsTrue(
-                department.getWorkers().empty()
-            );
+            Assert::IsTrue(department.getSpecialties().empty());
+            Assert::IsTrue(department.getDisciplines().empty());
+            Assert::IsTrue(department.getPositions().empty());
+            Assert::IsTrue(department.getGroups().empty());
+            Assert::IsTrue(department.getWorkers().empty());
 
             department.addSpecialty(specialty);
-
-            department.addDiscipline(
-                Discipline("Физика", {"Лекции"})
-            );
-
-            department.addPosition(
-                Position("Преподаватель")
-            );
-
+            department.addDiscipline(Discipline("Физика", {"Лекции"}));
+            department.addPosition(Position("Преподаватель"));
             department.addGroup(group);
 
             Assert::AreEqual<std::size_t>(
@@ -304,56 +263,41 @@ namespace DepartmentTests
             );
         }
 
-        TEST_METHOD(Department_OwnsDifferentWorkerTypes)
+        TEST_METHOD(Department_StoresWorkerPointers)
         {
-            Department department("Кафедра информатики");
+            Teacher teacher(
+                "Иванов Иван",
+                "Кафедра информатики",
+                {"Физика"},
+                {"Лекции"}
+            );
 
-            std::unique_ptr<Worker> teacher =
-                std::make_unique<Teacher>(
-                    "Иванов Иван",
-                    department.getName(),
-                    std::vector<std::string>{
-                        "Физика"
-                    },
-                    std::vector<std::string>{
-                        "Лекции"
-                    }
-                );
-
-            const std::string expectedTeacher =
-                teacher->toString();
-
-            department.addWorker(std::move(teacher));
-
-            // Владение объектом перешло кафедре.
-            Assert::IsTrue(teacher == nullptr);
-
-            auto engineer = std::make_unique<Engineer>(
+            Engineer engineer(
                 "Петров Пётр",
-                department.getName(),
+                "Кафедра информатики",
                 "Сети"
             );
 
-            const std::string expectedEngineer =
-                engineer->toString();
+            Department department("Кафедра информатики");
 
-            department.addWorker(std::move(engineer));
+            department.addWorker(&teacher);
+            department.addWorker(&engineer);
 
-            const auto& workers = department.getWorkers();
+            const std::vector<Worker*>& workers =
+                department.getWorkers();
 
-            Assert::AreEqual<std::size_t>(
-                2,
-                workers.size()
-            );
+            Assert::AreEqual<std::size_t>(2, workers.size());
 
-            // Вызовы через Worker сохраняют поведение наследников.
+            Assert::IsTrue(workers[0] == &teacher);
+            Assert::IsTrue(workers[1] == &engineer);
+
             Assert::AreEqual(
-                expectedTeacher,
+                teacher.toString(),
                 workers[0]->toString()
             );
 
             Assert::AreEqual(
-                expectedEngineer,
+                engineer.toString(),
                 workers[1]->toString()
             );
 
@@ -362,6 +306,29 @@ namespace DepartmentTests
                     "Кафедра информатики, работников: 2, групп: 0"
                 ),
                 department.toString()
+            );
+        }
+
+        TEST_METHOD(Department_FindsWorker)
+        {
+            Teacher teacher(
+                "Иванов Иван",
+                "Кафедра информатики",
+                {"Физика"},
+                {"Лекции"}
+            );
+
+            Department department("Кафедра информатики");
+            department.addWorker(&teacher);
+
+            const Worker* found =
+                department.findWorker("Иванов Иван");
+
+            Assert::IsTrue(found == &teacher);
+
+            Assert::IsTrue(
+                department.findWorker("Несуществующий работник")
+                == nullptr
             );
         }
 
@@ -376,8 +343,45 @@ namespace DepartmentTests
                 }
             );
 
-            Assert::IsTrue(
-                department.getWorkers().empty()
+            Assert::IsTrue(department.getWorkers().empty());
+        }
+
+        TEST_METHOD(Department_RejectsDuplicateWorker)
+        {
+            Teacher teacher(
+                "Иванов Иван",
+                "Кафедра информатики",
+                {"Физика"},
+                {"Лекции"}
+            );
+
+            Teacher sameName(
+                "Иванов Иван",
+                "Кафедра информатики",
+                {"Математика"},
+                {"Практические занятия"}
+            );
+
+            Department department("Кафедра информатики");
+            department.addWorker(&teacher);
+
+            Assert::ExpectException<std::invalid_argument>(
+                [&department, &teacher]()
+                {
+                    department.addWorker(&teacher);
+                }
+            );
+
+            Assert::ExpectException<std::invalid_argument>(
+                [&department, &sameName]()
+                {
+                    department.addWorker(&sameName);
+                }
+            );
+
+            Assert::AreEqual<std::size_t>(
+                1,
+                department.getWorkers().size()
             );
         }
     };
