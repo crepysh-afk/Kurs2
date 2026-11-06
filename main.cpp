@@ -20,18 +20,12 @@
  */
 int main()
 {
-    Department department("Кафедра информатики");
-
-    // Специальность.
+    const std::string departmentName = "Кафедра информатики";
 
     const Specialty specialty(
         "09.03.01",
         "Информатика и вычислительная техника"
     );
-
-    department.addSpecialty(specialty);
-
-    // Дисциплины и виды занятий по ним.
 
     const Discipline programming(
         "Программирование",
@@ -58,16 +52,45 @@ int main()
         }
     );
 
+    Teacher firstTeacher(
+        "Иванов Иван Иванович",
+        departmentName,
+        {
+            programming.getName(),
+            algorithms.getName()
+        },
+        {
+            "Лекции",
+            "Лабораторные"
+        }
+    );
+
+    Engineer engineer(
+        "Петров Пётр Петрович",
+        departmentName,
+        "Системное администрирование"
+    );
+
+    Teacher secondTeacher(
+        "Сидорова Анна Сергеевна",
+        departmentName,
+        {
+            databases.getName(),
+            programming.getName()
+        },
+        databases.getLessonTypes()
+    );
+
+    Department department(departmentName);
+
+    department.addSpecialty(specialty);
+
     department.addDiscipline(programming);
     department.addDiscipline(algorithms);
     department.addDiscipline(databases);
 
-    // Должности.
-
     department.addPosition(Position("Преподаватель"));
     department.addPosition(Position("Инженер"));
-
-    // Первая группа и её студенты.
 
     Group firstGroup("ИВТ-201", specialty);
 
@@ -79,61 +102,21 @@ int main()
         Student("Кузнецова Мария Олеговна", "24002")
     );
 
-    // Вторая группа и её студент.
-
     Group secondGroup("ИВТ-202", specialty);
 
     secondGroup.addStudent(
         Student("Орлов Дмитрий Сергеевич", "24003")
     );
 
-    // Добавляем уже заполненные группы на кафедру.
-
     department.addGroup(firstGroup);
     department.addGroup(secondGroup);
 
-    // Работники — прежние классы Teacher и Engineer.
+    department.addWorker(&firstTeacher);
+    department.addWorker(&engineer);
+    department.addWorker(&secondTeacher);
 
-    department.addWorker(
-        std::make_unique<Teacher>(
-            "Иванов Иван Иванович",
-            department.getName(),
-            std::vector<std::string>{
-                programming.getName(),
-                algorithms.getName()
-            },
-            std::vector<std::string>{
-                "Лекции",
-                "Лабораторные"
-            }
-        )
-    );
-
-    department.addWorker(
-        std::make_unique<Engineer>(
-            "Петров Пётр Петрович",
-            department.getName(),
-            "Системное администрирование"
-        )
-    );
-
-    department.addWorker(
-        std::make_unique<Teacher>(
-            "Сидорова Анна Сергеевна",
-            department.getName(),
-            std::vector<std::string>{
-                databases.getName(),
-                programming.getName()
-            },
-            databases.getLessonTypes()
-        )
-    );
-
-    // Вывод информации.
-
-    std::cout << department.toString() << "\n\n";
-
-    std::cout << "Специальности:\n";
+    std::cout << department.toString()
+              << "\n\nСпециальности:\n";
 
     for (const Specialty& item : department.getSpecialties())
     {
@@ -168,10 +151,29 @@ int main()
 
     std::cout << "\nРаботники кафедры:\n";
 
-    for (const std::unique_ptr<Worker>& worker
-         : department.getWorkers())
+    for (const Worker* worker : department.getWorkers())
     {
         std::cout << worker->toString() << "\n\n";
+    }
+
+    const Worker* found =
+        department.findWorker("Иванов Иван Иванович");
+
+    if (found != nullptr)
+    {
+        std::cout << "Найден работник: "
+                  << found->toString()
+                  << '\n';
+    }
+    else
+    {
+        std::cout << "Работник не найден.\n";
+    }
+
+    if (department.findWorker("Неизвестный работник") == nullptr)
+    {
+        std::cout
+            << "Неизвестный работник: на кафедре такого работника нет.\n";
     }
 
     return 0;
