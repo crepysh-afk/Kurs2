@@ -1,10 +1,9 @@
 #include "CppUnitTest.h"
 
-#include "Department.h"
 #include "Engineer.h"
 #include "Teacher.h"
+#include "Worker.h"
 
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -12,376 +11,170 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace DepartmentTests
 {
-    TEST_CLASS(DepartmentModelTests)
+    TEST_CLASS(WorkerTests)
     {
     public:
-        TEST_METHOD(Specialty_StoresData)
+        TEST_METHOD(Teacher_CreatesCorrectObject)
         {
-            const Specialty specialty(
-                "09.03.01",
-                "Информатика"
-            );
-
-            Assert::AreEqual(
-                std::string("09.03.01"),
-                specialty.getCode()
-            );
-
-            Assert::AreEqual(
-                std::string("Информатика"),
-                specialty.getName()
-            );
-
-            Assert::AreEqual(
-                std::string("09.03.01 - Информатика"),
-                specialty.toString()
-            );
-        }
-
-        TEST_METHOD(Position_StoresData)
-        {
-            const Position position("Преподаватель");
-
-            Assert::AreEqual(
-                std::string("Преподаватель"),
-                position.getName()
-            );
-
-            Assert::AreEqual(
-                std::string("Преподаватель"),
-                position.toString()
-            );
-        }
-
-        TEST_METHOD(Student_StoresData)
-        {
-            const Student student("Иванов Иван", "24001");
-
-            Assert::AreEqual(
-                std::string("Иванов Иван"),
-                student.getFullName()
-            );
-
-            Assert::AreEqual(
-                std::string("24001"),
-                student.getRecordBookNumber()
-            );
-
-            Assert::AreEqual(
-                std::string("Иванов Иван, зачётная книжка: 24001"),
-                student.toString()
-            );
-        }
-
-        TEST_METHOD(Discipline_StoresLessonTypes)
-        {
-            const Discipline discipline(
-                "Физика",
+            const Teacher teacher(
+                "Иванов Иван Иванович",
+                "Кафедра информатики",
+                {"Программирование", "Алгоритмы"},
                 {"Лекции", "Лабораторные"}
             );
 
-            const std::vector<std::string>& types =
-                discipline.getLessonTypes();
-
             Assert::AreEqual(
-                std::string("Физика"),
-                discipline.getName()
+                std::string("Иванов Иван Иванович"),
+                teacher.getFullName()
             );
 
-            Assert::AreEqual<std::size_t>(2, types.size());
+            Assert::AreEqual(
+                std::string("Преподаватель"),
+                teacher.getPosition()
+            );
+
+            Assert::AreEqual(
+                std::string("Кафедра информатики"),
+                teacher.getDepartment()
+            );
+
+            const std::vector<std::string>& disciplines =
+                teacher.getDisciplines();
+
+            Assert::AreEqual<std::size_t>(
+                2,
+                disciplines.size()
+            );
+
+            Assert::AreEqual(
+                std::string("Программирование"),
+                disciplines[0]
+            );
+
+            Assert::AreEqual(
+                std::string("Алгоритмы"),
+                disciplines[1]
+            );
+        }
+
+        TEST_METHOD(Teacher_ContainsDiscipline)
+        {
+            const Teacher teacher(
+                "Иванов Иван Иванович",
+                "Кафедра информатики",
+                {"Программирование", "Алгоритмы"},
+                {"Лекции", "Лабораторные"}
+            );
+
+            Assert::IsTrue(
+                teacher.teachesDiscipline("Программирование")
+            );
+
+            Assert::IsTrue(
+                teacher.teachesDiscipline("Алгоритмы")
+            );
+
+            Assert::IsFalse(
+                teacher.teachesDiscipline("Физика")
+            );
+        }
+
+        TEST_METHOD(Teacher_ReturnsLessonTypes)
+        {
+            const Teacher teacher(
+                "Иванов Иван Иванович",
+                "Кафедра информатики",
+                {"Программирование"},
+                {"Лекции", "Лабораторные"}
+            );
+
+            const std::vector<std::string>& lessonTypes =
+                teacher.getLessonTypes();
+
+            Assert::AreEqual<std::size_t>(
+                2,
+                lessonTypes.size()
+            );
 
             Assert::AreEqual(
                 std::string("Лекции"),
-                types[0]
+                lessonTypes[0]
             );
 
             Assert::AreEqual(
                 std::string("Лабораторные"),
-                types[1]
-            );
-
-            Assert::AreEqual(
-                std::string(
-                    "Физика, виды занятий: Лекции, Лабораторные"
-                ),
-                discipline.toString()
+                lessonTypes[1]
             );
         }
 
-        TEST_METHOD(Discipline_AllowsEmptyLessonTypes)
+        TEST_METHOD(Engineer_CreatesCorrectObject)
         {
-            const Discipline discipline("Физика", {});
-
-            Assert::IsTrue(
-                discipline.getLessonTypes().empty()
+            const Engineer engineer(
+                "Петров Пётр Петрович",
+                "Кафедра информатики",
+                "Системное администрирование"
             );
 
             Assert::AreEqual(
-                std::string("Физика, виды занятий: "),
-                discipline.toString()
-            );
-        }
-
-        TEST_METHOD(Group_StoresSpecialtyAndStudents)
-        {
-            const Specialty specialty(
-                "09.03.01",
-                "Информатика"
-            );
-
-            Group group("ИВТ-201", specialty);
-
-            Assert::AreEqual(
-                std::string("ИВТ-201"),
-                group.getName()
+                std::string("Петров Пётр Петрович"),
+                engineer.getFullName()
             );
 
             Assert::AreEqual(
-                specialty.getCode(),
-                group.getSpecialty().getCode()
+                std::string("Инженер"),
+                engineer.getPosition()
             );
-
-            Assert::AreEqual(
-                specialty.getName(),
-                group.getSpecialty().getName()
-            );
-
-            Assert::IsTrue(group.getStudents().empty());
-
-            group.addStudent(Student("Иванов Иван", "24001"));
-            group.addStudent(Student("Петров Пётр", "24002"));
-
-            Assert::AreEqual<std::size_t>(
-                2,
-                group.getStudents().size()
-            );
-
-            Assert::AreEqual(
-                std::string("24001"),
-                group.getStudents()[0].getRecordBookNumber()
-            );
-
-            Assert::AreEqual(
-                std::string("24002"),
-                group.getStudents()[1].getRecordBookNumber()
-            );
-
-            Assert::AreEqual(
-                std::string(
-                    "Группа: ИВТ-201, специальность: "
-                    "09.03.01 - Информатика, студентов: 2"
-                ),
-                group.toString()
-            );
-        }
-
-        TEST_METHOD(Department_StoresCollections)
-        {
-            Department department("Кафедра информатики");
-
-            const Specialty specialty(
-                "09.03.01",
-                "Информатика"
-            );
-
-            Group group("ИВТ-201", specialty);
-            group.addStudent(Student("Иванов Иван", "24001"));
 
             Assert::AreEqual(
                 std::string("Кафедра информатики"),
-                department.getName()
-            );
-
-            Assert::IsTrue(department.getSpecialties().empty());
-            Assert::IsTrue(department.getDisciplines().empty());
-            Assert::IsTrue(department.getPositions().empty());
-            Assert::IsTrue(department.getGroups().empty());
-            Assert::IsTrue(department.getWorkers().empty());
-
-            department.addSpecialty(specialty);
-            department.addDiscipline(Discipline("Физика", {"Лекции"}));
-            department.addPosition(Position("Преподаватель"));
-            department.addGroup(group);
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getSpecialties().size()
-            );
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getDisciplines().size()
-            );
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getPositions().size()
-            );
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getGroups().size()
+                engineer.getDepartment()
             );
 
             Assert::AreEqual(
-                specialty.getCode(),
-                department.getSpecialties()[0].getCode()
-            );
-
-            Assert::AreEqual(
-                std::string("Физика"),
-                department.getDisciplines()[0].getName()
-            );
-
-            Assert::AreEqual(
-                std::string("Преподаватель"),
-                department.getPositions()[0].getName()
-            );
-
-            Assert::AreEqual(
-                std::string("ИВТ-201"),
-                department.getGroups()[0].getName()
-            );
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getGroups()[0].getStudents().size()
-            );
-
-            Assert::AreEqual(
-                std::string("24001"),
-                department.getGroups()[0]
-                    .getStudents()[0]
-                    .getRecordBookNumber()
-            );
-
-            Assert::AreEqual(
-                std::string(
-                    "Кафедра информатики, работников: 0, групп: 1"
-                ),
-                department.toString()
+                std::string("Системное администрирование"),
+                engineer.getSpecialization()
             );
         }
 
-        TEST_METHOD(Department_StoresWorkerPointers)
+        TEST_METHOD(Polymorphism_WorksCorrectly)
         {
             Teacher teacher(
-                "Иванов Иван",
+                "Иванов Иван Иванович",
                 "Кафедра информатики",
-                {"Физика"},
+                {"Программирование"},
                 {"Лекции"}
             );
 
-            Engineer engineer(
-                "Петров Пётр",
-                "Кафедра информатики",
-                "Сети"
-            );
+            Worker* worker = &teacher;
 
-            Department department("Кафедра информатики");
-
-            department.addWorker(&teacher);
-            department.addWorker(&engineer);
-
-            const std::vector<Worker*>& workers =
-                department.getWorkers();
-
-            Assert::AreEqual<std::size_t>(2, workers.size());
-
-            Assert::IsTrue(workers[0] == &teacher);
-            Assert::IsTrue(workers[1] == &engineer);
-
-            Assert::AreEqual(
-                teacher.toString(),
-                workers[0]->toString()
-            );
-
-            Assert::AreEqual(
-                engineer.toString(),
-                workers[1]->toString()
-            );
-
-            Assert::AreEqual(
-                std::string(
-                    "Кафедра информатики, работников: 2, групп: 0"
-                ),
-                department.toString()
-            );
-        }
-
-        TEST_METHOD(Department_FindsWorker)
-        {
-            Teacher teacher(
-                "Иванов Иван",
-                "Кафедра информатики",
-                {"Физика"},
-                {"Лекции"}
-            );
-
-            Department department("Кафедра информатики");
-            department.addWorker(&teacher);
-
-            const Worker* found =
-                department.findWorker("Иванов Иван");
-
-            Assert::IsTrue(found == &teacher);
+            const std::string result = worker->toString();
 
             Assert::IsTrue(
-                department.findWorker("Несуществующий работник")
-                == nullptr
+                result.find("Преподаватель") != std::string::npos
+            );
+
+            Assert::IsTrue(
+                result.find("Программирование") != std::string::npos
             );
         }
 
-        TEST_METHOD(Department_RejectsNullWorker)
+        TEST_METHOD(Engineer_ToStringContainsSpecialization)
         {
-            Department department("Кафедра информатики");
-
-            Assert::ExpectException<std::invalid_argument>(
-                [&department]()
-                {
-                    department.addWorker(nullptr);
-                }
-            );
-
-            Assert::IsTrue(department.getWorkers().empty());
-        }
-
-        TEST_METHOD(Department_RejectsDuplicateWorker)
-        {
-            Teacher teacher(
-                "Иванов Иван",
+            const Engineer engineer(
+                "Петров Пётр Петрович",
                 "Кафедра информатики",
-                {"Физика"},
-                {"Лекции"}
+                "Системное администрирование"
             );
 
-            Teacher sameName(
-                "Иванов Иван",
-                "Кафедра информатики",
-                {"Математика"},
-                {"Практические занятия"}
+            const std::string result = engineer.toString();
+
+            Assert::IsTrue(
+                result.find("Инженер") != std::string::npos
             );
 
-            Department department("Кафедра информатики");
-            department.addWorker(&teacher);
-
-            Assert::ExpectException<std::invalid_argument>(
-                [&department, &teacher]()
-                {
-                    department.addWorker(&teacher);
-                }
-            );
-
-            Assert::ExpectException<std::invalid_argument>(
-                [&department, &sameName]()
-                {
-                    department.addWorker(&sameName);
-                }
-            );
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getWorkers().size()
+            Assert::IsTrue(
+                result.find("Системное администрирование")
+                != std::string::npos
             );
         }
     };
