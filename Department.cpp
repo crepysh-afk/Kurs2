@@ -1,7 +1,6 @@
 #include "Department.h"
 
 #include <stdexcept>
-#include <utility>
 
 Department::Department(const std::string& name)
     : name_(name)
@@ -28,14 +27,38 @@ void Department::addGroup(const Group& group)
     groups_.push_back(group);
 }
 
-void Department::addWorker(std::unique_ptr<Worker> worker)
+void Department::addWorker(Worker* worker)
 {
     if (worker == nullptr)
     {
-        throw std::invalid_argument("Работник не задан.");
+        throw std::invalid_argument(
+            "Работник не существует: передан пустой указатель."
+        );
     }
 
-    workers_.push_back(std::move(worker));
+    if (findWorker(worker->getFullName()) != nullptr)
+    {
+        throw std::invalid_argument(
+            "Работник с таким ФИО уже добавлен."
+        );
+    }
+
+    workers_.push_back(worker);
+}
+
+const Worker* Department::findWorker(
+    const std::string& fullName
+) const
+{
+    for (const Worker* worker : workers_)
+    {
+        if (worker->getFullName() == fullName)
+        {
+            return worker;
+        }
+    }
+
+    return nullptr;
 }
 
 const std::string& Department::getName() const noexcept
@@ -61,12 +84,13 @@ Department::getPositions() const noexcept
     return positions_;
 }
 
-const std::vector<Group>& Department::getGroups() const noexcept
+const std::vector<Group>&
+Department::getGroups() const noexcept
 {
     return groups_;
 }
 
-const std::vector<std::unique_ptr<Worker>>&
+const std::vector<Worker*>&
 Department::getWorkers() const noexcept
 {
     return workers_;
