@@ -6,7 +6,6 @@
 #include "Specialty.h"
 #include "Worker.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,8 +13,12 @@
  * @brief Кафедра.
  *
  * Содержит специальности, дисциплины, должности,
- * учебные группы и работников.
+ * учебные группы и указатели на работников.
  * Студенты хранятся внутри учебных групп.
+ *
+ * Кафедра не владеет работниками и не удаляет их.
+ * Работники должны существовать всё время использования
+ * сохранённых указателей.
  */
 class Department
 {
@@ -26,80 +29,126 @@ private:
     std::vector<Discipline> disciplines_;
     std::vector<Position> positions_;
     std::vector<Group> groups_;
-
-    std::vector<std::unique_ptr<Worker>> workers_;
+    std::vector<Worker*> workers_;
 
 public:
     /**
-     * @brief Создаёт кафедру.
+     * @brief Создаёт кафедру с пустыми коллекциями.
+     *
      * @param name Название кафедры.
      */
     explicit Department(const std::string& name);
 
     /**
-     * @brief Добавляет специальность.
+     * @brief Добавляет специальность на кафедру.
+     *
+     * В коллекции сохраняется копия специальности.
+     *
      * @param specialty Добавляемая специальность.
      */
     void addSpecialty(const Specialty& specialty);
 
     /**
-     * @brief Добавляет дисциплину.
+     * @brief Добавляет дисциплину на кафедру.
+     *
+     * В коллекции сохраняется копия дисциплины.
+     *
      * @param discipline Добавляемая дисциплина.
      */
     void addDiscipline(const Discipline& discipline);
 
     /**
-     * @brief Добавляет должность.
+     * @brief Добавляет должность на кафедру.
+     *
+     * В коллекции сохраняется копия должности.
+     *
      * @param position Добавляемая должность.
      */
     void addPosition(const Position& position);
 
     /**
-     * @brief Добавляет группу вместе с её студентами.
-     * @param group Группа. В кафедре сохраняется её копия.
+     * @brief Добавляет учебную группу вместе с её студентами.
+     *
+     * В коллекции сохраняется копия группы.
+     *
+     * @param group Добавляемая группа.
      */
     void addGroup(const Group& group);
 
     /**
-     * @brief Добавляет работника и принимает владение им.
-     * @param worker Умный указатель на работника.
-     * @throws std::invalid_argument Если указатель пустой.
+     * @brief Добавляет указатель на работника кафедры.
+     *
+     * Проверяет указатель на nullptr и отсутствие работника
+     * с таким же ФИО. Владение объектом не передаётся.
+     *
+     * @param worker Указатель на существующего работника.
+     *
+     * @throws std::invalid_argument Если передан nullptr
+     * или работник с таким ФИО уже добавлен.
      */
-    void addWorker(std::unique_ptr<Worker> worker);
+    void addWorker(Worker* worker);
 
     /**
-     * @return Название кафедры.
+     * @brief Находит работника по полному совпадению ФИО.
+     *
+     * @param fullName ФИО искомого работника.
+     *
+     * @return Указатель на найденного работника,
+     * доступного только для чтения, или nullptr,
+     * если работник не найден.
+     */
+    const Worker* findWorker(const std::string& fullName) const;
+
+    /**
+     * @brief Возвращает название кафедры.
+     *
+     * @return Константная ссылка на название кафедры.
      */
     const std::string& getName() const noexcept;
 
     /**
-     * @return Специальности кафедры.
+     * @brief Возвращает специальности кафедры.
+     *
+     * @return Константная ссылка на список специальностей.
      */
     const std::vector<Specialty>& getSpecialties() const noexcept;
 
     /**
-     * @return Дисциплины кафедры.
+     * @brief Возвращает дисциплины кафедры.
+     *
+     * @return Константная ссылка на список дисциплин.
      */
     const std::vector<Discipline>& getDisciplines() const noexcept;
 
     /**
-     * @return Должности кафедры.
+     * @brief Возвращает должности кафедры.
+     *
+     * @return Константная ссылка на список должностей.
      */
     const std::vector<Position>& getPositions() const noexcept;
 
     /**
-     * @return Группы кафедры.
+     * @brief Возвращает учебные группы кафедры.
+     *
+     * @return Константная ссылка на список групп.
      */
     const std::vector<Group>& getGroups() const noexcept;
 
     /**
-     * @return Коллекция работников базового типа Worker.
+     * @brief Возвращает коллекцию указателей на работников.
+     *
+     * Полученная ссылка не позволяет менять состав коллекции.
+     * Владение работниками не передаётся.
+     *
+     * @return Константная ссылка на список указателей Worker*.
      */
-    const std::vector<std::unique_ptr<Worker>>&
-        getWorkers() const noexcept;
+    const std::vector<Worker*>& getWorkers() const noexcept;
 
     /**
-     * @return Сводная информация о кафедре.
+     * @brief Формирует сводную информацию о кафедре.
+     *
+     * @return Строка с названием кафедры,
+     * количеством работников и учебных групп.
      */
     std::string toString() const;
 };
