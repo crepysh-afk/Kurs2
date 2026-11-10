@@ -1,7 +1,7 @@
 #pragma once 
 
 #include <string> 
-#include 
+#include <vector>
 
 
 class Discipline
@@ -17,7 +17,5 @@ public:
     );
     const std::string& getName() const noexcept;
     const std::vector<std::string>& getLessonTypes() const noexcept;
-
-    // Получение информации в виде строки.
     std::string toString() const;
 };
