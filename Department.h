@@ -29,7 +29,7 @@ private:
     std::vector<Discipline> disciplines_;
     std::vector<Position> positions_;
     std::vector<Group> groups_;
-    std::vector<Worker*> workers_;
+    std::vector<Worker> workers_;
 
 public:
     /**
