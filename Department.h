@@ -142,7 +142,7 @@ public:
      *
      * @return Константная ссылка на список указателей Worker*.
      */
-    const std::vector<Worker*>& getWorkers() const noexcept;
+    const std::vector<Worker>& getWorkers() const noexcept;
 
     /**
      * @brief Формирует сводную информацию о кафедре.
