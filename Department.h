@@ -97,7 +97,7 @@ public:
      * доступного только для чтения, или nullptr,
      * если работник не найден.
      */
-    const Worker* findWorker(const std::string& fullName) const;
+    const Worker findWorker(const std::string& fullName) const;
 
     /**
      * @brief Возвращает название кафедры.
