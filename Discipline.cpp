@@ -1,80 +1,40 @@
-#include "Department.h"
+#include "Discipline.h" 
 
-#include <stdexcept>
-#include <utility>
-
-Department::Department(const std::string& name)
-    : name_(name)
+Discipline::Discipline(
+    const std::string& name,
+    const std::vector<std::string>& lessonTypes
+)
+    : name_(name), 
+      lessonTypes_(lessonTypes) 
 {
 }
 
-void Department::addSpecialty(const Specialty& specialty)
+const std::string& Discipline::getName() const noexcept
 {
-    specialties_.push_back(specialty);
+    return name_; 
 }
 
-void Department::addDiscipline(const Discipline& discipline)
+const std::vector<std::string>&
+Discipline::getLessonTypes() const noexcept
 {
-    disciplines_.push_back(discipline);
+    return lessonTypes_; 
 }
 
-void Department::addPosition(const Position& position)
+std::string Discipline::toString() const
 {
-    positions_.push_back(position);
-}
+    
+    std::string result = name_ + ", виды занятий: ";
 
-void Department::addGroup(const Group& group)
-{
-    groups_.push_back(group);
-}
-
-void Department::addWorker(std::unique_ptr<Worker> worker)
-{
-    if (worker == nullptr)
+    
+    for (std::size_t i = 0; i < lessonTypes_.size(); ++i)
     {
-        throw std::invalid_argument("Работник не задан.");
+        result += lessonTypes_[i]; 
+
+        if (i + 1 < lessonTypes_.size()) 
+        {
+            result += ", "; 
+        }
     }
 
-    workers_.push_back(std::move(worker));
-}
-
-const std::string& Department::getName() const noexcept
-{
-    return name_;
-}
-
-const std::vector<Specialty>&
-Department::getSpecialties() const noexcept
-{
-    return specialties_;
-}
-
-const std::vector<Discipline>&
-Department::getDisciplines() const noexcept
-{
-    return disciplines_;
-}
-
-const std::vector<Position>&
-Department::getPositions() const noexcept
-{
-    return positions_;
-}
-
-const std::vector<Group>& Department::getGroups() const noexcept
-{
-    return groups_;
-}
-
-const std::vector<std::unique_ptr<Worker>>&
-Department::getWorkers() const noexcept
-{
-    return workers_;
-}
-
-std::string Department::toString() const
-{
-    return name_
-        + ", работников: " + std::to_string(workers_.size())
-        + ", групп: " + std::to_string(groups_.size());
+    return result; // Возвращаем готовую строку.
 }
