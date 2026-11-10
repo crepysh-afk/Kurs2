@@ -90,7 +90,7 @@ Department::getGroups() const noexcept
     return groups_;
 }
 
-const std::vector<Worker*>&
+const std::vector<Worker>&
 Department::getWorkers() const noexcept
 {
     return workers_;
