@@ -46,11 +46,11 @@ void Department::addWorker(Worker* worker)
     workers_.push_back(worker);
 }
 
-const Worker* Department::findWorker(
+const Worker Department::findWorker(
     const std::string& fullName
 ) const
 {
-    for (const Worker* worker : workers_)
+    for (const Worker worker : workers_)
     {
         if (worker->getFullName() == fullName)
         {
