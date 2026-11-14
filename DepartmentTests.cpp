@@ -145,9 +145,9 @@ namespace DepartmentTests
                 {"Лекции"}
             );
 
-            Worker* worker = &teacher;
+            const Worker& worker = teacher;
 
-            const std::string result = worker->toString();
+            const std::string result = worker.toString();
 
             Assert::IsTrue(
                 result.find("Преподаватель") != std::string::npos

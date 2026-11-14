@@ -4,7 +4,8 @@
 #include "Group.h"
 #include "Position.h"
 #include "Specialty.h"
-#include "Worker.h"
+#include "Teacher.h"
+#include "Engineer.h"
 
 #include <string>
 #include <vector>
@@ -13,12 +14,8 @@
  * @brief Кафедра.
  *
  * Содержит специальности, дисциплины, должности,
- * учебные группы и указатели на работников.
+ * учебные группы, преподавателей и инженеров.
  * Студенты хранятся внутри учебных групп.
- *
- * Кафедра не владеет работниками и не удаляет их.
- * Работники должны существовать всё время использования
- * сохранённых указателей.
  */
 class Department
 {
@@ -29,7 +26,8 @@ private:
     std::vector<Discipline> disciplines_;
     std::vector<Position> positions_;
     std::vector<Group> groups_;
-    std::vector<Worker> workers_;
+    std::vector<Teacher> teachers_;
+    std::vector<Engineer> engineers_;
 
 public:
     /**
@@ -75,29 +73,19 @@ public:
      */
     void addGroup(const Group& group);
 
-    /**
-     * @brief Добавляет указатель на работника кафедры.
-     *
-     * Проверяет указатель на nullptr и отсутствие работника
-     * с таким же ФИО. Владение объектом не передаётся.
-     *
-     * @param worker Указатель на существующего работника.
-     *
-     * @throws std::invalid_argument Если передан nullptr
-     * или работник с таким ФИО уже добавлен.
-     */
-    void addWorker(Worker* worker);
+    // Сохраняет копию работника; одинаковые ФИО не допускаются.
+    void addWorker(const Teacher& worker);
+    void addWorker(const Engineer& worker);
 
     /**
      * @brief Находит работника по полному совпадению ФИО.
      *
      * @param fullName ФИО искомого работника.
      *
-     * @return Указатель на найденного работника,
-     * доступного только для чтения, или nullptr,
+     * @return Информация о работнике или пустая строка,
      * если работник не найден.
      */
-    const Worker findWorker(const std::string& fullName) const;
+    std::string findWorker(const std::string& fullName) const;
 
     /**
      * @brief Возвращает название кафедры.
@@ -134,15 +122,8 @@ public:
      */
     const std::vector<Group>& getGroups() const noexcept;
 
-    /**
-     * @brief Возвращает коллекцию указателей на работников.
-     *
-     * Полученная ссылка не позволяет менять состав коллекции.
-     * Владение работниками не передаётся.
-     *
-     * @return Константная ссылка на список указателей Worker*.
-     */
-    const std::vector<Worker>& getWorkers() const noexcept;
+    const std::vector<Teacher>& getTeachers() const noexcept;
+    const std::vector<Engineer>& getEngineers() const noexcept;
 
     /**
      * @brief Формирует сводную информацию о кафедре.

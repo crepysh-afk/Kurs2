@@ -27,38 +27,49 @@ void Department::addGroup(const Group& group)
     groups_.push_back(group);
 }
 
-void Department::addWorker(Worker* worker)
+void Department::addWorker(const Teacher& worker)
 {
-    if (worker == nullptr)
+    if (!findWorker(worker.getFullName()).empty())
     {
         throw std::invalid_argument(
-            "Работник не существует: передан пустой указатель."
+            "Работник с таким ФИО уже добавлен."
         );
     }
+    teachers_.push_back(worker);
+}
 
-    if (findWorker(worker->getFullName()) != nullptr)
+void Department::addWorker(const Engineer& worker)
+{
+    if (!findWorker(worker.getFullName()).empty())
     {
         throw std::invalid_argument(
             "Работник с таким ФИО уже добавлен."
         );
     }
 
-    workers_.push_back(worker);
+    engineers_.push_back(worker);
 }
 
-const Worker Department::findWorker(
+std::string Department::findWorker(
     const std::string& fullName
 ) const
 {
-    for (const Worker worker : workers_)
+    for (const Teacher& worker : teachers_)
     {
-        if (worker->getFullName() == fullName)
+        if (worker.getFullName() == fullName)
         {
-            return worker;
+            return worker.toString();
         }
     }
 
-    return nullptr;
+    for (const Engineer& worker : engineers_)
+    {
+        if (worker.getFullName() == fullName)
+        {
+            return worker.toString();
+        }
+    }
+    return "";
 }
 
 const std::string& Department::getName() const noexcept
@@ -90,15 +101,21 @@ Department::getGroups() const noexcept
     return groups_;
 }
 
-const std::vector<Worker>&
-Department::getWorkers() const noexcept
+const std::vector<Teacher>&
+Department::getTeachers() const noexcept
 {
-    return workers_;
+    return teachers_;
+}
+
+const std::vector<Engineer>&
+Department::getEngineers() const noexcept
+{
+    return engineers_;
 }
 
 std::string Department::toString() const
 {
     return name_
-        + ", работников: " + std::to_string(workers_.size())
+        + ", работников: " + std::to_string(teachers_.size() + engineers_.size())
         + ", групп: " + std::to_string(groups_.size());
 }

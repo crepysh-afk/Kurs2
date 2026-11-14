@@ -196,7 +196,8 @@ namespace DepartmentTests
             Assert::IsTrue(department.getDisciplines().empty());
             Assert::IsTrue(department.getPositions().empty());
             Assert::IsTrue(department.getGroups().empty());
-            Assert::IsTrue(department.getWorkers().empty());
+            Assert::IsTrue(department.getTeachers().empty());
+            Assert::IsTrue(department.getEngineers().empty());
 
             department.addSpecialty(specialty);
             department.addDiscipline(Discipline("Физика", {"Лекции"}));
@@ -263,126 +264,52 @@ namespace DepartmentTests
             );
         }
 
-        TEST_METHOD(Department_StoresWorkerPointers)
+        TEST_METHOD(Department_StoresWorkers)
         {
-            Teacher teacher(
-                "Иванов Иван",
-                "Кафедра информатики",
-                {"Физика"},
-                {"Лекции"}
-            );
-
-            Engineer engineer(
-                "Петров Пётр",
-                "Кафедра информатики",
-                "Сети"
-            );
-
+            Teacher teacher("Иванов Иван", "Кафедра информатики", {"Физика"}, {"Лекции"});
+            Engineer engineer("Петров Пётр", "Кафедра информатики", "Сети");
             Department department("Кафедра информатики");
+            department.addWorker(teacher);
+            department.addWorker(engineer);
 
-            department.addWorker(&teacher);
-            department.addWorker(&engineer);
-
-            const std::vector<Worker*>& workers =
-                department.getWorkers();
-
-            Assert::AreEqual<std::size_t>(2, workers.size());
-
-            Assert::IsTrue(workers[0] == &teacher);
-            Assert::IsTrue(workers[1] == &engineer);
-
+            Assert::AreEqual<std::size_t>(1, department.getTeachers().size());
+            Assert::AreEqual<std::size_t>(1, department.getEngineers().size());
+            Assert::AreEqual(teacher.toString(), department.getTeachers()[0].toString());
+            Assert::AreEqual(engineer.toString(), department.getEngineers()[0].toString());
             Assert::AreEqual(
-                teacher.toString(),
-                workers[0]->toString()
-            );
-
-            Assert::AreEqual(
-                engineer.toString(),
-                workers[1]->toString()
-            );
-
-            Assert::AreEqual(
-                std::string(
-                    "Кафедра информатики, работников: 2, групп: 0"
-                ),
+                std::string("Кафедра информатики, работников: 2, групп: 0"),
                 department.toString()
             );
         }
 
         TEST_METHOD(Department_FindsWorker)
         {
-            Teacher teacher(
-                "Иванов Иван",
-                "Кафедра информатики",
-                {"Физика"},
-                {"Лекции"}
-            );
-
+            Teacher teacher("Иванов Иван", "Кафедра информатики", {"Физика"}, {"Лекции"});
+            Engineer engineer("Петров Пётр", "Кафедра информатики", "Сети");
             Department department("Кафедра информатики");
-            department.addWorker(&teacher);
+            department.addWorker(teacher);
+            department.addWorker(engineer);
 
-            const Worker* found =
-                department.findWorker("Иванов Иван");
-
-            Assert::IsTrue(found == &teacher);
-
-            Assert::IsTrue(
-                department.findWorker("Несуществующий работник")
-                == nullptr
-            );
-        }
-
-        TEST_METHOD(Department_RejectsNullWorker)
-        {
-            Department department("Кафедра информатики");
-
-            Assert::ExpectException<std::invalid_argument>(
-                [&department]()
-                {
-                    department.addWorker(nullptr);
-                }
-            );
-
-            Assert::IsTrue(department.getWorkers().empty());
+            Assert::AreEqual(teacher.toString(), department.findWorker("Иванов Иван"));
+            Assert::AreEqual(engineer.toString(), department.findWorker("Петров Пётр"));
+            Assert::IsTrue(department.findWorker("Несуществующий работник").empty());
         }
 
         TEST_METHOD(Department_RejectsDuplicateWorker)
         {
-            Teacher teacher(
-                "Иванов Иван",
-                "Кафедра информатики",
-                {"Физика"},
-                {"Лекции"}
-            );
-
-            Teacher sameName(
-                "Иванов Иван",
-                "Кафедра информатики",
-                {"Математика"},
-                {"Практические занятия"}
-            );
-
+            Teacher teacher("Иванов Иван", "Кафедра информатики", {"Физика"}, {"Лекции"});
+            Engineer sameName("Иванов Иван", "Кафедра информатики", "Сети");
             Department department("Кафедра информатики");
-            department.addWorker(&teacher);
+            department.addWorker(teacher);
 
-            Assert::ExpectException<std::invalid_argument>(
-                [&department, &teacher]()
-                {
-                    department.addWorker(&teacher);
-                }
-            );
-
-            Assert::ExpectException<std::invalid_argument>(
-                [&department, &sameName]()
-                {
-                    department.addWorker(&sameName);
-                }
-            );
-
-            Assert::AreEqual<std::size_t>(
-                1,
-                department.getWorkers().size()
-            );
+            Assert::ExpectException<std::invalid_argument>([&department, &teacher]() {
+                department.addWorker(teacher);
+            });
+            Assert::ExpectException<std::invalid_argument>([&department, &sameName]() {
+                department.addWorker(sameName);
+            });
+            Assert::AreEqual<std::size_t>(1, department.getTeachers().size());
+            Assert::IsTrue(department.getEngineers().empty());
         }
     };
 }

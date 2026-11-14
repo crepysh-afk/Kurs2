@@ -1,7 +1,10 @@
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "Department.h"
 #include "Engineer.h"
@@ -13,13 +16,16 @@
  * Создаёт кафедру, специальность, дисциплины, должности,
  * группы, студентов и работников.
  *
- * Работники хранятся как коллекция умных указателей
- * на базовый класс Worker. Вывод использует полиморфизм.
+ * Преподаватели и инженеры хранятся как обычные объекты.
  *
  * @return 0 при успешном завершении.
  */
 int main()
 {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     const std::string departmentName = "Кафедра информатики";
 
     const Specialty specialty(
@@ -111,9 +117,9 @@ int main()
     department.addGroup(firstGroup);
     department.addGroup(secondGroup);
 
-    department.addWorker(&firstTeacher);
-    department.addWorker(&engineer);
-    department.addWorker(&secondTeacher);
+    department.addWorker(firstTeacher);
+    department.addWorker(engineer);
+    department.addWorker(secondTeacher);
 
     std::cout << department.toString()
               << "\n\nСпециальности:\n";
@@ -151,18 +157,23 @@ int main()
 
     std::cout << "\nРаботники кафедры:\n";
 
-    for (const Worker* worker : department.getWorkers())
+    for (const Teacher& worker : department.getTeachers())
     {
-        std::cout << worker->toString() << "\n\n";
+        std::cout << worker.toString() << "\n\n";
     }
 
-    const Worker* found =
+    for (const Engineer& worker : department.getEngineers())
+    {
+        std::cout << worker.toString() << "\n\n";
+    }
+
+    const std::string found =
         department.findWorker("Иванов Иван Иванович");
 
-    if (found != nullptr)
+    if (!found.empty())
     {
         std::cout << "Найден работник: "
-                  << found->toString()
+                  << found
                   << '\n';
     }
     else
@@ -170,7 +181,7 @@ int main()
         std::cout << "Работник не найден.\n";
     }
 
-    if (department.findWorker("Неизвестный работник") == nullptr)
+    if (department.findWorker("Неизвестный работник").empty())
     {
         std::cout
             << "Неизвестный работник: на кафедре такого работника нет.\n";
